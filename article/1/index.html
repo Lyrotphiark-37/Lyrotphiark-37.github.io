@@ -109,7 +109,9 @@
             <div class="p-6">
                 <nav class="space-y-3">
                     <span style="font-size: 15px;" class="cyan-gradient">现在时间：</span><br>
-					<span id="time" style="font-size: 15px;">00:00:00</span>
+					<span id="time" style="font-size: 15px;">00:00:00</span><br>
+                    <span style="font-size: 15px;" class="cyan-gradient">当天运势：</span><br>
+					<span id="fun" style="text-align: center; font-size: 20px;"></span><br>
                 </nav>
             </div>
         </aside>
@@ -175,6 +177,19 @@
 			const formattedTime = year + " 年 " + month + " 月 " + day + " 日 <br/>" + noon + hours + " : " + minutes + " : " + seconds;
 			document.getElementById("time").innerHTML=formattedTime;
 		}, 500);
+		setInterval(() => {
+			const now = new Date();
+			const year = now.getFullYear();
+			const month = ('0' + (now.getMonth() + 1)).slice(-2);
+			const day = ('0' + now.getDate()).slice(-2);
+            sum = now.getFullYear()*2627+(now.getMonth() + 1)*71+now.getDate()*2;
+            sum%=7;
+            const ys=["大凶","凶","小凶","中平","小吉","中吉","大吉"];
+            if (sum <= 2) document.getElementById("fun").className="text-black-400";
+            if (sum == 3) document.getElementById("fun").className="text-green-400";
+            if (sum > 3) document.getElementById("fun").className="text-red-400";
+            document.getElementById("fun").innerHTML=ys[sum];
+        }, 500);
     </script>
 </body>
 
