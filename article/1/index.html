@@ -171,7 +171,8 @@
 			noon = String(" 上午 ");
 			if (hour < 6) noon = String(" 凌晨 ");
 			if (hour > 12) noon = String(" 下午 ");
-			if (hour > 19) noon = String(" 傍晚 ");
+			if (hour >= 18) noon = String(" 傍晚 ");
+			if (hour >= 20) noon = String(" 晚上 ");
 			if (hour === 12) noon = String(" 中午 ");
 			if (hour >= 22) noon = String(" 半夜 ");
 			const formattedTime = year + " 年 " + month + " 月 " + day + " 日 <br/>" + noon + hours + " : " + minutes + " : " + seconds;
