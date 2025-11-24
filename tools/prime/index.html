@@ -365,11 +365,11 @@
                 t2=g.getSeconds();
                 //if (t1!=t2) break;
             }
-            n=temp;
             if (prime(n))
                 document.getElementById("pri").innerHTML="小于它的第一个质数是: "+String(n);
             else 
                 document.getElementById("pri").innerHTML="小于它的第一个质数是: None";
+            n=temp;
 			document.getElementById("res").className="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-green-400";
 			document.getElementById("res").innerHTML="该数字是质数。";
 			if (n < 2n) return false;
