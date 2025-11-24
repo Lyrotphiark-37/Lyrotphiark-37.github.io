@@ -6,12 +6,12 @@
     <title>Lyrotphiark 的个人网站 - 质数判断</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="Math.jpeg">
+    <link rel="icon" href="https://lyrotphiark-37.github.io/Math.jpeg">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 		@font-face {
 		    font-family: 'QFKT';  /* 自定义字体名称 */
-		    src: url('QFKT.ttf') format('truetype');  /* 注意format必须是truetype */
+		    src: url('https://lyrotphiark-37.github.io/QFKT.ttf') format('truetype');  /* 注意format必须是truetype */
 		    font-weight: normal;  /* 可选：字体粗细 */
 		    font-style: normal;   /* 可选：字体样式 */
 		}
@@ -126,13 +126,16 @@
                     </h1>
                 </div>
 
-				<input type="number" class="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105" 
-					placeholder="输入你要判断的质数。" style="width: 100%;" min="2" id="my_number"/>
-					
+				<input type="number" class="glass-effect p-6 rounded-2xl transition-all duration-300
+					placeholder="输入你要判断的质数。" style="width: 80%;display: inline;" min="2" id="my_number"/>
 				<input type="button" class="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 cyan-gradient"
-					value="判断" style="width: 20%;display: inline;" onclick="judge()"/>
+					value="判断" style="width: 15%;display: inline; " onclick="judge()"/><br id="br1"/><br id="br2"/>
 				<p class="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-red-400"
 					style="width: 20%;display: inline;" id="res">该数字不是质数。</p>
+				<p class="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-gray-400"
+					style="width: 40%;display: inline;" id="pr">大于它的第一个质数是: 2</p>
+				<p class="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-gray-400"
+					style="width: 40%;display: inline;" id="pri">小于它的第一个质数是: None</p>
             </div>
         </main>
     </div>
@@ -175,8 +178,7 @@
 			noon = String(" 上午 ");
 			if (hour < 6) noon = String(" 凌晨 ");
 			if (hour > 12) noon = String(" 下午 ");
-			if (hour >= 18) noon = String(" 傍晚 ");
-			if (hour >= 20) noon = String(" 晚上 ");
+			if (hour > 19) noon = String(" 傍晚 ");
 			if (hour === 12) noon = String(" 中午 ");
 			if (hour >= 22) noon = String(" 半夜 ");
 			const formattedTime = year + " 年 " + month + " 月 " + day + " 日 <br/>" + noon + hours + " : " + minutes + " : " + seconds;
@@ -220,11 +222,70 @@
 			}
 			return result;
 		}
-
-		function judge() {
-			n = BigInt(document.getElementById("my_number").value);
+        function prime(n){
+            
+			n = BigInt(n);
 			if (n < 2n) return false;
 			if (n === 2n || n === 3n) return true;
+
+			let d = n - 1n;
+			let r = 0;
+			while ((d & 1n) === 0n) {
+				d >>= 1n;
+				r++;
+			}
+
+			for (let i = 0; i < 6; i++) {
+				const a = BigInt(Math.floor(Math.random() * Number(n - 2n))) + 2n;
+				let x = mod_exp(a, d, n);
+				if (x === 1n || x === n - 1n) continue;
+
+				let composite = true;
+				for (let j = 0; j < r - 1; j++) {
+					x = mod_mul(x, x, n);
+					if (x === n - 1n) {
+						composite = false;
+						break;
+					}
+				}
+				if (composite)
+					return false;
+			}
+            return true;
+        }
+		function judge() {
+			n = BigInt(document.getElementById("my_number").value);
+            if (n>=1e32) {
+                document.getElementById("res").style.display="";
+                document.getElementById("pr").style.display="";
+                document.getElementById("pri").style.display="";
+                document.getElementById("pr").style.width="100%";
+                document.getElementById("pri").style.width="100%";
+                document.getElementById("br1").style.display="none";
+                document.getElementById("br2").style.display="none";
+            }else {
+                document.getElementById("res").style.display="inline";
+                document.getElementById("pr").style.display="inline";
+                document.getElementById("pri").style.display="inline";
+                document.getElementById("pr").style.width="40%";
+                document.getElementById("pri").style.width="40%";
+                document.getElementById("br1").style.display="";
+                document.getElementById("br2").style.display="";
+            }
+			if (n < 2n){
+                document.getElementById("pr").innerHTML="大于它的第一个质数是: 2";
+                document.getElementById("pri").innerHTML="小于它的第一个质数是: None";
+                document.getElementById("res").className="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-red-400";
+                document.getElementById("res").innerHTML="该数字不是质数。";
+                return false;
+            }
+			if (n === 2n || n === 3n){
+                document.getElementById("pr").innerHTML="大于它的第一个质数是: 5";
+                document.getElementById("pri").innerHTML="小于它的第一个质数是: None";
+                document.getElementById("res").className="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-green-400";
+                document.getElementById("res").innerHTML="该数字是质数。";
+                return true;
+            }
 
 			let d = n - 1n;
 			let r = 0;
@@ -249,13 +310,77 @@
 				if (composite){
 					document.getElementById("res").className="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-red-400";
 					document.getElementById("res").innerHTML="该数字不是质数。";
+                    h=new Date();
+                    t1=h.getSeconds();
+                    temp=n;
+                    n++;
+                    while (!prime(n)){
+                        n++;
+                        g=new Date();
+                        t2=g.getSeconds();
+                        //if (t1!=t2) break;
+                    }
+                    if (prime(n))
+                        document.getElementById("pr").innerHTML="大于它的第一个质数是: "+String(n);
+                    else 
+                        document.getElementById("pr").innerHTML="大于它的第一个质数是: None";
+                    h=new Date();
+                    t1=h.getSeconds();
+                    n=temp;
+                    n--;
+                    while (!prime(n)){
+                        n--;
+                        g=new Date();
+                        t2=g.getSeconds();
+                        //if (t1!=t2) break;
+                    }
+                    if (prime(n))
+                        document.getElementById("pri").innerHTML="小于它的第一个质数是: "+String(n);
+                    else 
+                        document.getElementById("pri").innerHTML="小于它的第一个质数是: None";
 					return false;
 				}
 			}
+            h=new Date();
+            t1=h.getSeconds();
+            temp=n;
+            n++;
+            while (!prime(n)){
+                n++;
+                g=new Date();
+                t2=g.getSeconds();
+                //if (t1!=t2) break;
+            }
+            if (prime(n))
+                document.getElementById("pr").innerHTML="大于它的第一个质数是: "+String(n);
+            else 
+                document.getElementById("pr").innerHTML="大于它的第一个质数是: None";
+            h=new Date();
+            t1=h.getSeconds();
+            n=temp;
+            n--;
+            while (!prime(n)){
+                n--;
+                g=new Date();
+                t2=g.getSeconds();
+                //if (t1!=t2) break;
+            }
+            n=temp;
+            if (prime(n))
+                document.getElementById("pri").innerHTML="小于它的第一个质数是: "+String(n);
+            else 
+                document.getElementById("pri").innerHTML="小于它的第一个质数是: None";
 			document.getElementById("res").className="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-green-400";
 			document.getElementById("res").innerHTML="该数字是质数。";
+			if (n < 2n) return false;
 			n=(n-1n)/2n;
 			
+            if (n===2n||n===3n){
+                document.getElementById("res").className="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-green-400";
+                document.getElementById("res").innerHTML="该数字是安全质数。";
+                return true;
+            }
+            
 			d = n - 1n;
 			r = 0;
 			while ((d & 1n) === 0n) {
