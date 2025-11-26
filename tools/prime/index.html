@@ -199,7 +199,7 @@
 			const year = now.getFullYear();
 			const month = ('0' + (now.getMonth() + 1)).slice(-2);
 			const day = ('0' + now.getDate()).slice(-2);
-            sum = now.getFullYear()*2627+(now.getMonth() + 1)*71+now.getDate()*2;
+            sum = now.getFullYear()*2627+(now.getMonth() + 1)*71+now.getDate()*37;
             sum%=7;
             const ys=["大凶","凶","小凶","中平","小吉","中吉","大吉"];
             if (sum <= 2) document.getElementById("fun").className="text-black-400";
