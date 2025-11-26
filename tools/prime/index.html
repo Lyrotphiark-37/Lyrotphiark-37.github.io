@@ -86,6 +86,14 @@
         .animate-fade-in-up {
             animation: fadeInUp 0.8s ease-out;
         }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -126,7 +134,7 @@
                     </h1>
                 </div>
 
-				<input type="number" class="glass-effect p-6 rounded-2xl transition-all duration-300
+				<input type="number" class="glass-effect p-6 rounded-2xl transition-all duration-300" onkeydown="if(event.keyCode==13) {judge()}"
 					placeholder="输入你要判断的质数。" style="width: 80%;display: inline;" min="2" id="my_number"/>
 				<input type="button" class="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 cyan-gradient"
 					value="判断" style="width: 15%;display: inline; " onclick="judge()"/><br id="br1"/><br id="br2"/>
@@ -136,6 +144,8 @@
 					style="width: 40%;display: inline;" id="pr">大于它的第一个质数是: 2</p>
 				<p class="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-gray-400"
 					style="width: 40%;display: inline;" id="pri">小于它的第一个质数是: None</p>
+				<p class="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-gray-400"
+					style="width: 40%;display: inline;" id="prim">该区间的质数密度大致为: N/A%</p>
             </div>
         </main>
     </div>
@@ -255,18 +265,20 @@
         }
 		function judge() {
 			n = BigInt(document.getElementById("my_number").value);
-            if (n>=1e32) {
+            if (n>=1e16) {
                 document.getElementById("res").style.display="";
                 document.getElementById("pr").style.display="";
                 document.getElementById("pri").style.display="";
-                document.getElementById("pr").style.width="100%";
-                document.getElementById("pri").style.width="100%";
+                document.getElementById("prim").style.display="";
+                document.getElementById("pr").style.width="90%";
+                document.getElementById("pri").style.width="90%";
                 document.getElementById("br1").style.display="none";
                 document.getElementById("br2").style.display="none";
             }else {
                 document.getElementById("res").style.display="inline";
                 document.getElementById("pr").style.display="inline";
                 document.getElementById("pri").style.display="inline";
+                document.getElementById("prim").style.display="inline";
                 document.getElementById("pr").style.width="40%";
                 document.getElementById("pri").style.width="40%";
                 document.getElementById("br1").style.display="";
@@ -275,6 +287,7 @@
 			if (n < 2n){
                 document.getElementById("pr").innerHTML="大于它的第一个质数是: 2";
                 document.getElementById("pri").innerHTML="小于它的第一个质数是: None";
+                document.getElementById("prim").innerHTML="该区间的质数密度大致为: N/A%";
                 document.getElementById("res").className="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-red-400";
                 document.getElementById("res").innerHTML="该数字不是质数。";
                 return false;
@@ -282,8 +295,27 @@
 			if (n === 2n || n === 3n){
                 document.getElementById("pr").innerHTML="大于它的第一个质数是: 5";
                 document.getElementById("pri").innerHTML="小于它的第一个质数是: None";
+                document.getElementById("prim").innerHTML="该区间的质数密度大致为: N/A%";
+                if (n === 3n){
+                    document.getElementById("pri").innerHTML="小于它的第一个质数是: 2";
+                    document.getElementById("prim").innerHTML="该区间的质数密度大致为: 75%";
+                }
                 document.getElementById("res").className="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-green-400";
                 document.getElementById("res").innerHTML="该数字是质数。";
+                return true;
+            }
+			if (n === 5n || n === 7n){
+                if (n === 5n)
+                    document.getElementById("pr").innerHTML="大于它的第一个质数是: 7";
+                else document.getElementById("pr").innerHTML="大于它的第一个质数是: 11";
+                if (n === 5n)
+                    document.getElementById("pri").innerHTML="小于它的第一个质数是: 3";
+                else document.getElementById("pri").innerHTML="小于它的第一个质数是: 5";
+                document.getElementById("res").className="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-green-400";
+                document.getElementById("res").innerHTML="该数字是安全质数，并且是孪生质数";
+                if (n === 5n)
+                    document.getElementById("prim").innerHTML="该区间的质数密度大致为: 60%";
+                else document.getElementById("prim").innerHTML="该区间的质数密度大致为: 43%";
                 return true;
             }
 
@@ -324,6 +356,7 @@
                         document.getElementById("pr").innerHTML="大于它的第一个质数是: "+String(n);
                     else 
                         document.getElementById("pr").innerHTML="大于它的第一个质数是: None";
+                    tempn=n;
                     h=new Date();
                     t1=h.getSeconds();
                     n=temp;
@@ -338,9 +371,11 @@
                         document.getElementById("pri").innerHTML="小于它的第一个质数是: "+String(n);
                     else 
                         document.getElementById("pri").innerHTML="小于它的第一个质数是: None";
+                    document.getElementById("prim").innerHTML="该区间的质数密度大致为: "+Math.round(2/Number(tempn-n+1n)*100)+"%";
 					return false;
 				}
 			}
+            var lsp=false;
             h=new Date();
             t1=h.getSeconds();
             temp=n;
@@ -351,10 +386,13 @@
                 t2=g.getSeconds();
                 //if (t1!=t2) break;
             }
+            if (prime(n)&&n-temp===2n)
+                lsp=true;
             if (prime(n))
                 document.getElementById("pr").innerHTML="大于它的第一个质数是: "+String(n);
             else 
                 document.getElementById("pr").innerHTML="大于它的第一个质数是: None";
+            tempn=n;
             h=new Date();
             t1=h.getSeconds();
             n=temp;
@@ -369,9 +407,13 @@
                 document.getElementById("pri").innerHTML="小于它的第一个质数是: "+String(n);
             else 
                 document.getElementById("pri").innerHTML="小于它的第一个质数是: None";
+            if (prime(n)&&temp-n===2n)
+                lsp=true;
+            document.getElementById("prim").innerHTML="该区间的质数密度大致为: "+Math.round(3/Number(tempn-n+1n)*100)+"%";
             n=temp;
 			document.getElementById("res").className="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-green-400";
 			document.getElementById("res").innerHTML="该数字是质数。";
+            if (lsp) document.getElementById("res").innerHTML="该数字是质数，并且是孪生质数。";
 			if (n < 2n) return false;
 			n=(n-1n)/2n;
 			
@@ -407,6 +449,7 @@
 			}
 			document.getElementById("res").className="glass-effect p-6 rounded-2xl transition-all duration-300 hover:transform hover:scale-105 text-green-400";
 			document.getElementById("res").innerHTML="该数字是安全质数。";
+            if (lsp) document.getElementById("res").innerHTML="该数字是安全质数，并且是孪生质数。";
 			return true;
 		}
     </script>
